@@ -3,27 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bandingkan Follow Instagramu</title>
+    <title>Bandingkan Follow Instagram</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="icon" href="https://avatar.iran.liara.run/public/">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <h1>Cek Follow dan Follback</h1>
-    <div class="container">
-        <label for="followers-file">Upload Followers JSON:</label>
-        <input type="file" id="followers-file" accept=".json">
+    <div class="wrapper">
+        <h1>Cek Follow dan Follback</h1>
+        <div class="container">
+            <label for="zip-file" class="file-label">Upload File ZIP:</label>
+            <input type="file" id="zip-file" accept=".zip">
 
-        <label for="following-file">Upload Following JSON:</label>
-        <input type="file" id="following-file" accept=".json">
+            <button id="process-btn" class="btn">Bandingkan</button>
 
-        <button id="process-btn">Bandingkan</button>
+            <div id="loading">
+                <div class="spinner"></div>
+                <p>Processing...</p>
+            </div>
 
-        <div id="loading">Processing...</div>
-
-        <h2 id="h2">Berikut Orang yang Kamu Follow Tapi Gak Follback:</h2>
-        <div id="no-followback-list" class="results-container"></div>
+            <h2 id="h2">Berikut Orang yang Kamu Follow Tapi Gak Follback:</h2>
+            <div id="no-followback-list" class="grid-container"></div>
+        </div>
     </div>
 
     <div id="info-box">
@@ -31,7 +32,7 @@
         <p><a href="https://piq.my.id" target="_blank">Check my website</a></p>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
     <script src="comparison.js"></script>
-    <script src="footer.js"></script>
 </body>
 </html>

@@ -1,12 +1,11 @@
-document.getElementById('process-btn').addEventListener('click', processFiles);
+document.getElementById('process-btn').addEventListener('click', processZipFile);
 document.getElementById('h2').style.display = 'none';
 
-function processFiles() {
-    const followersFile = document.getElementById('followers-file').files[0];
-    const followingFile = document.getElementById('following-file').files[0];
+function processZipFile() {
+    const zipFile = document.getElementById('zip-file').files[0];
 
-    if (!followersFile || !followingFile) {
-        alert("Please upload both JSON files.");
+    if (!zipFile) {
+        alert("Please upload a ZIP file.");
         return;
     }
 
@@ -14,26 +13,36 @@ function processFiles() {
     document.getElementById('loading').style.display = 'block';
 
     // Hide input fields, labels, and button
-    document.getElementById('followers-file').style.display = 'none';
-    document.getElementById('following-file').style.display = 'none';
+    document.getElementById('zip-file').style.display = 'none';
     document.getElementById('process-btn').style.display = 'none';
     document.getElementById('h2').style.display = 'block';
-    document.querySelector('label[for="followers-file"]').style.display = 'none';
-    document.querySelector('label[for="following-file"]').style.display = 'none';
+    document.querySelector('label[for="zip-file"]').style.display = 'none';
 
-    const followersReader = new FileReader();
-    const followingReader = new FileReader();
+    const zip = new JSZip();
 
-    followersReader.onload = function(e) {
-        const followersData = JSON.parse(e.target.result);
-        followingReader.onload = function(e) {
-            const followingData = JSON.parse(e.target.result);
-            compareData(followersData, followingData);
-        };
-        followingReader.readAsText(followingFile);
-    };
-    
-    followersReader.readAsText(followersFile);
+    // Read the zip file
+    zip.loadAsync(zipFile).then(function(zipContent) {
+        // Extract files from 'connections/followers_and_following/' folder
+        const followersFile = zipContent.file("connections/followers_and_following/followers_1.json");
+        const followingFile = zipContent.file("connections/followers_and_following/following.json");
+
+        if (followersFile && followingFile) {
+            // Read followers_1.json
+            followersFile.async("string").then(function(followersData) {
+                // Read following.json after followers_1.json is processed
+                followingFile.async("string").then(function(followingData) {
+                    compareData(JSON.parse(followersData), JSON.parse(followingData));
+                });
+            });
+        } else {
+            alert("Required JSON files not found in the ZIP.");
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('zip-file').style.display = 'block';
+            document.getElementById('process-btn').style.display = 'block';
+            document.getElementById('h2').style.display = 'none';
+            document.querySelector('label[for="zip-file"]').style.display = 'block';
+        }
+    });
 }
 
 function compareData(followers, following) {
@@ -68,13 +77,13 @@ function compareData(followers, following) {
             const timestamp = document.createElement('div');
             const date = new Date(user.timestamp * 1000);
             const options = { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric', 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            second: '2-digit',
-            timeZoneName: 'short' 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                timeZoneName: 'short' 
             };
             timestamp.textContent = `Followed: ${date.toLocaleDateString(undefined, options)}`;
             timestamp.classList.add('timestamp');

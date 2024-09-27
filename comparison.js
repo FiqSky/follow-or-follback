@@ -15,7 +15,6 @@ function processZipFile() {
     // Hide input fields, labels, and button
     document.getElementById('zip-file').style.display = 'none';
     document.getElementById('process-btn').style.display = 'none';
-    document.getElementById('h2').style.display = 'block';
     document.querySelector('label[for="zip-file"]').style.display = 'none';
 
     const zip = new JSZip();
@@ -32,6 +31,10 @@ function processZipFile() {
                 // Read following.json after followers_1.json is processed
                 followingFile.async("string").then(function(followingData) {
                     compareData(JSON.parse(followersData), JSON.parse(followingData));
+
+                    // Show the h2 element after processing is complete and hide the loading spinner
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('h2').style.display = 'block';
                 });
             });
         } else {
@@ -52,31 +55,31 @@ function compareData(followers, following) {
     const noFollowBack = followingUsers.filter(user => !followerUsernames.includes(user.value));
 
     const noFollowBackList = document.getElementById('no-followback-list');
-    noFollowBackList.innerHTML = ''; // Clear previous results
+    noFollowBackList.innerHTML = ''; // Bersihkan hasil sebelumnya
 
-    // Hide loading message
+    // Hilangkan loading
     document.getElementById('loading').style.display = 'none';
 
     if (noFollowBack.length > 0) {
         noFollowBack.forEach(user => {
             const card = document.createElement('div');
-            card.classList.add('profile-card');
+            card.classList.add('profile-card', 'fade-in');  // Tambahkan kelas animasi
 
-            // Create image element for Instagram profile picture
+            // Buat elemen gambar profil
             const img = document.createElement('img');
-            img.src = `https://avatar.iran.liara.run/public/${Math.floor(Math.random() * 100)}.png`; 
+            img.src = `https://avatar.iran.liara.run/public/${Math.floor(Math.random() * 100)}.png`;
             img.alt = `${user.value}'s profile picture`;
 
-            // Create anchor element for Instagram profile link
+            // Buat tautan username
             const usernameLink = document.createElement('a');
             usernameLink.href = user.href;
             usernameLink.textContent = user.value;
             usernameLink.target = "_blank";
 
-            // Create timestamp element
+            // Buat elemen timestamp
             const timestamp = document.createElement('div');
             const date = new Date(user.timestamp * 1000);
-            const options = { 
+            const options = {
                 year: 'numeric', 
                 month: 'long', 
                 day: 'numeric', 
@@ -95,6 +98,6 @@ function compareData(followers, following) {
             noFollowBackList.appendChild(card);
         });
     } else {
-        noFollowBackList.innerHTML = '<div class="no-results">Everyone follows you back!</div>';
+        noFollowBackList.innerHTML = '<div class="no-results fade-in">Everyone follows you back!</div>';
     }
 }
